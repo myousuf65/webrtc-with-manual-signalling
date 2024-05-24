@@ -1,0 +1,35 @@
+#streams{
+  width: 100%;
+  height: 300px;
+  padding: 20px;
+  border: 1px solid red;
+  display: flex;
+  justify-content: space-around;
+}
+
+
+#local-video, #remote-video{
+  width: 200px;
+  height: 200px;
+  background-color: green;
+}
+
+
+#offers{
+  width: 100%;
+  height: 300px;
+  padding: 20px;
+  border: 1px solid red;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;  
+}
+
+#local-offer, #remote-offer{
+  width: 80%;
+}
+
+
+#gen-local, #gen-remote{
+  width: fit-content;
+}
