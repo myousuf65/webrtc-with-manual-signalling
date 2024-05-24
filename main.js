@@ -1,6 +1,5 @@
-import {callsCollection} from "./config/firebaseConfig.js"
-import { addDoc } from "firebase/firestore"
-
+import { addDoc, collection, doc, setDoc } from "firebase/firestore"
+import {db} from "./config/firebaseConfig.js"
 
 //elements
 let localVideo = document.getElementById('local-video')
@@ -34,6 +33,12 @@ async function init(){
 }
 
 async function createOffer(){
+
+  // initializing the firestore doc structure
+  const callDoc =  doc(collection(db, 'calls'))
+  const offerCandidates = collection(callDoc, 'offerCandidates')
+  
+
   peerConnection = new RTCPeerConnection(STUN_SERVERS) 
 
   // initailzing stream for remote
@@ -41,7 +46,6 @@ async function createOffer(){
   remoteVideo.srcObject = remoteStream
 
 
-  console.log(localStream)
   //sending tracks 
   localStream.getTracks().forEach(track => {
     console.log(track)
@@ -57,18 +61,20 @@ async function createOffer(){
 
   // ice candidates
   peerConnection.onicecandidate = async (event) =>{
-    console.log('got ice candidates')
     if (event.candidate){
       // peer connection will continue adding more to this variable
       localOffer.value = JSON.stringify(peerConnection.localDescription)
+      console.log(event.candidate)
+      addDoc(offerCandidates, event.candidate.toJSON())
     }
   }
 
   let offer = await peerConnection.createOffer()
   await peerConnection.setLocalDescription(offer)
-  // localOffer.value = JSON.stringify(peerConnection.localDescription)
-  const signalledOffer = await addDoc(callsCollection, offer )
-  console.log(signalledOffer.id)
+  localOffer.value = JSON.stringify(peerConnection.localDescription)
+  setDoc(callDoc, offer)
+
+
 }
 
 let createAnswer = async() => {
@@ -79,10 +85,8 @@ let createAnswer = async() => {
   remoteVideo.srcObject = remoteStream
 
 
-  console.log(localStream)
   //sending tracks 
   localStream.getTracks().forEach(track => {
-    console.log(track)
     peerConnection.addTrack(track, localStream)
   });
 
