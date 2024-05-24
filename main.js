@@ -1,3 +1,6 @@
+import {callsCollection} from "./config/firebaseConfig.js"
+import { addDoc } from "firebase/firestore"
+
 
 //elements
 let localVideo = document.getElementById('local-video')
@@ -63,9 +66,9 @@ async function createOffer(){
 
   let offer = await peerConnection.createOffer()
   await peerConnection.setLocalDescription(offer)
-  localOffer.value = JSON.stringify(peerConnection.localDescription)
-
-
+  // localOffer.value = JSON.stringify(peerConnection.localDescription)
+  const signalledOffer = await addDoc(callsCollection, offer )
+  console.log(signalledOffer.id)
 }
 
 let createAnswer = async() => {
